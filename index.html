@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Please Leave</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b0b0b;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: 0.3s;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 7%;
+      border-bottom: 1px solid #222;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo span {
+      color: #ff3b30;
+    }
+
+    #themeBtn {
+      padding: 10px 18px;
+      border-radius: 30px;
+      border: 1px solid #444;
+      background: #111;
+      color: white;
+      cursor: pointer;
+    }
+
+    .hero {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(50px, 9vw, 120px);
+      line-height: 0.9;
+      max-width: 1000px;
+    }
+
+    .hero h1 span {
+      color: #ff3b30;
+    }
+
+    .hero p {
+      margin-top: 30px;
+      max-width: 550px;
+      font-size: 18px;
+      color: #999;
+      line-height: 1.7;
+    }
+
+    .button-zone {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      height: 170px;
+      margin-top: 30px;
+    }
+
+    #mainBtn {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 18px 32px;
+      font-size: 17px;
+      font-weight: bold;
+      background: #ff3b30;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.12s;
+      white-space: nowrap;
+    }
+
+    .wasted {
+      margin-top: 10px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .section {
+      max-width: 900px;
+      margin: auto;
+      padding: 100px 20px;
+    }
+
+    .section h2 {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 50px;
+    }
+
+    .card {
+      max-width: 500px;
+      margin: auto;
+      padding: 35px;
+      background: #121212;
+      border: 1px solid #252525;
+      border-radius: 20px;
+    }
+
+    .card input {
+      width: 100%;
+      padding: 15px;
+      margin-top: 12px;
+      margin-bottom: 10px;
+      border-radius: 9px;
+      border: 1px solid #333;
+      background: #080808;
+      color: white;
+      outline: none;
+    }
+
+    .card input:focus {
+      border-color: #ff3b30;
+    }
+
+    #loginBtn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 15px;
+      border: none;
+      border-radius: 9px;
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #loginMessage {
+      min-height: 25px;
+      margin-top: 18px;
+      color: #ff3b30;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .loading-card {
+      max-width: 600px;
+      margin: auto;
+      padding: 35px;
+      background: #121212;
+      border-radius: 20px;
+      border: 1px solid #252525;
+    }
+
+    .loading-track {
+      height: 16px;
+      border-radius: 20px;
+      background: #222;
+      overflow: hidden;
+    }
+
+    #loadingBar {
+      width: 0%;
+      height: 100%;
+      background: #ff3b30;
+      transition: width 0.1s;
+    }
+
+    #loadingText {
+      margin-top: 20px;
+      text-align: center;
+      color: #777;
+    }
+
+    .terms-box {
+      position: relative;
+      height: 250px;
+      max-width: 650px;
+      margin: auto;
+      border: 1px solid #222;
+      border-radius: 20px;
+      background: #111;
+    }
+
+    #termsLabel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    footer {
+      padding: 50px;
+      text-align: center;
+      color: #555;
+    }
+
+    /* terrible light mode on purpose */
+
+    body.bad-light {
+      background: #ffff00;
+      color: #ff00ff;
+      font-family: "Comic Sans MS", cursive;
+    }
+
+    body.bad-light .card,
+    body.bad-light .loading-card,
+    body.bad-light .terms-box {
+      background: #00ffff;
+      border: 5px dashed red;
+    }
+
+    body.bad-light input {
+      background: lime;
+      color: blue;
+    }
+
+    body.bad-light .hero p,
+    body.bad-light .section-subtitle {
+      color: blue;
+    }
+
+    /* cookie popup */
+
+    #cookiePopup {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: min(420px, calc(100% - 40px));
+      padding: 25px;
+      background: white;
+      color: black;
+      border-radius: 15px;
+      z-index: 50;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    #cookiePopup p {
+      margin: 12px 0 20px;
+      color: #555;
+    }
+
+    .cookie-buttons {
+      position: relative;
+      height: 70px;
+    }
+
+    #rejectCookies {
+      padding: 16px 30px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #acceptCookies {
+      position: absolute;
+      right: 0;
+      top: 5px;
+      padding: 10px 16px;
+      background: #ddd;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #errorPopup {
+      position: fixed;
+      right: 20px;
+      top: 100px;
+      padding: 18px 22px;
+      background: #ff3b30;
+      border-radius: 10px;
+      font-weight: bold;
+      transform: translateX(150%);
+      transition: 0.3s;
+      z-index: 100;
+    }
+
+    #errorPopup.show {
+      transform: translateX(0);
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 58px;
+      }
+
+      .section h2 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">
+      PLEASE<span>LEAVE.</span>
+    </div>
+
+    <button id="themeBtn">
+      Light Mode ☀️
+    </button>
+  </nav>
+
+
+  <section class="hero">
+
+    <h1>
+      Welcome.<br>
+      <span>Unfortunately.</span>
+    </h1>
+
+    <p>
+      You somehow found this website.
+      We're disappointed in both of us.
+    </p>
+
+    <div class="button-zone" id="buttonZone">
+      <button id="mainBtn">
+        Enter Website
+      </button>
+    </div>
+
+    <div class="wasted">
+      Time wasted here:
+      <span id="timer">0</span> seconds
+    </div>
+
+  </section>
+
+
+  <section class="section">
+
+    <h2>Login</h2>
+
+    <p class="section-subtitle">
+      We already know you're going to get this wrong.
+    </p>
+
+    <div class="card">
+
+      <input
+        type="text"
+        id="username"
+        placeholder="Username"
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
+
+      <button id="loginBtn">
+        Login
+      </button>
+
+      <div id="loginMessage"></div>
+
+    </div>
+
+  </section>
+
+
+  <section class="section">
+
+    <h2>Please Wait</h2>
+
+    <p class="section-subtitle">
+      This definitely won't waste your time.
+    </p>
+
+    <div class="loading-card">
+
+      <div class="loading-track">
+        <div id="loadingBar"></div>
+      </div>
+
+      <div id="loadingText">
+        Loading absolutely nothing...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="section">
+
+    <h2>Terms & Conditions</h2>
+
+    <p class="section-subtitle">
+      Just accept them. Or try.
+    </p>
+
+    <div class="terms-box" id="termsBox">
+
+      <label id="termsLabel">
+
+        <input type="checkbox">
+
+        I agree to the terms
+
+      </label>
+
+    </div>
+
+  </section>
+
+
+  <footer>
+    © 2026 PleaseLeave. Unfortunately all rights reserved.
+  </footer>
+
+
+  <div id="cookiePopup">
+
+    <strong>
+      🍪 We use cookies.
+    </strong>
+
+    <p>
+      Not because we need them. We just wanted another popup.
+    </p>
+
+    <div class="cookie-buttons">
+
+      <button id="rejectCookies">
+        Reject Everything
+      </button>
+
+      <button id="acceptCookies">
+        Accept
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div id="errorPopup">
+    Error 418: Skill issue.
+  </div>
+
+
+<script>
+
+  // =============================
+  // TIME WASTED COUNTER
+  // =============================
+
+  let seconds = 0;
+
+  setInterval(() => {
+
+    seconds++;
+
+    document.getElementById("timer").textContent = seconds;
+
+  }, 1000);
+
+
+
+  // =============================
+  // BUTTON THAT RUNS AWAY
+  // =============================
+
+  const mainBtn = document.getElementById("mainBtn");
+  const buttonZone = document.getElementById("buttonZone");
+
+  mainBtn.addEventListener("mouseenter", () => {
+
+    const maxX =
+      buttonZone.clientWidth -
+      mainBtn.offsetWidth;
+
+    const maxY =
+      buttonZone.clientHeight -
+      mainBtn.offsetHeight;
+
+    const randomX =
+      Math.random() * maxX;
+
+    const randomY =
+      Math.random() * maxY;
+
+    mainBtn.style.left =
+      randomX + "px";
+
+    mainBtn.style.top =
+      randomY + "px";
+
+    mainBtn.style.transform =
+      "none";
+
+    const messages = [
+      "Nice try.",
+      "Too slow.",
+      "Almost.",
+      "Nope.",
+      "Catch me.",
+      "Skill issue."
+    ];
+
+    mainBtn.textContent =
+      messages[
+        Math.floor(
+          Math.random() * messages.length
+        )
+      ];
+
+  });
+
+
+
+  // =============================
+  // FAKE LOGIN
+  // =============================
+
+  const loginBtn =
+    document.getElementById("loginBtn");
+
+  const loginMessage =
+    document.getElementById("loginMessage");
+
+  const loginMessages = [
+
+    "Incorrect password. Obviously.",
+
+    "We expected better.",
+
+    "Password rejected for emotional reasons.",
+
+    "That password was embarrassing.",
+
+    "Account found. Access denied anyway.",
+
+    "Nice password. Still no.",
+
+    "Your credentials have been judged."
+
+  ];
+
+  loginBtn.addEventListener("click", () => {
+
+    const randomMessage =
+      loginMessages[
+        Math.floor(
+          Math.random() *
+          loginMessages.length
+        )
+      ];
+
+    loginMessage.textContent =
+      randomMessage;
+
+    loginBtn.textContent =
+      "Nope";
+
+    showError();
+
+  });
+
+
+
+  // =============================
+  // LOADING BAR
+  // =============================
+
+  let progress = 0;
+
+  const loadingBar =
+    document.getElementById("loadingBar");
+
+  const loadingText =
+    document.getElementById("loadingText");
+
+  setInterval(() => {
+
+    progress++;
+
+    loadingBar.style.width =
+      progress + "%";
+
+    loadingText.textContent =
+      "Loading... " +
+      progress +
+      "%";
+
+    if (progress >= 99) {
+
+      loadingText.textContent =
+        "Almost there 😈";
+
+      setTimeout(() => {
+
+        progress = 0;
+
+        loadingBar.style.width =
+          "0%";
+
+        loadingText.textContent =
+          "Something went wrong. Starting again.";
+
+      }, 500);
+
+    }
+
+  }, 100);
+
+
+
+  // =============================
+  // RUNAWAY TERMS CHECKBOX
+  // =============================
+
+  const termsLabel =
+    document.getElementById("termsLabel");
+
+  const termsBox =
+    document.getElementById("termsBox");
+
+  termsLabel.addEventListener(
+    "mouseenter",
+    () => {
+
+      const maxX =
+        termsBox.clientWidth -
+        termsLabel.offsetWidth;
+
+      const maxY =
+        termsBox.clientHeight -
+        termsLabel.offsetHeight;
+
+      termsLabel.style.left =
+        Math.random() *
+        maxX +
+        "px";
+
+      termsLabel.style.top =
+        Math.random() *
+        maxY +
+        "px";
+
+      termsLabel.style.transform =
+        "none";
+
+    }
+  );
+
+
+
+  // =============================
+  // TERRIBLE LIGHT MODE
+  // =============================
+
+  const themeBtn =
+    document.getElementById("themeBtn");
+
+  themeBtn.addEventListener("click", () => {
+
+    document.body.classList.toggle(
+      "bad-light"
+    );
+
+    if (
+      document.body.classList.contains(
+        "bad-light"
+      )
+    ) {
+
+      themeBtn.textContent =
+        "WHY DID YOU DO THAT?";
+
+    } else {
+
+      themeBtn.textContent =
+        "Light Mode ☀️";
+
+    }
+
+  });
+
+
+
+  // =============================
+  // COOKIE BUTTON RUNS AWAY
+  // =============================
+
+  const acceptCookies =
+    document.getElementById(
+      "acceptCookies"
+    );
+
+  acceptCookies.addEventListener(
+    "mouseenter",
+    () => {
+
+      acceptCookies.style.right =
+        Math.random() *
+        250 +
+        "px";
+
+      acceptCookies.style.top =
+        Math.random() *
+        40 +
+        "px";
+
+    }
+  );
+
+
+  document
+    .getElementById("rejectCookies")
+    .addEventListener("click", () => {
+
+      document.getElementById(
+        "cookiePopup"
+      ).style.display = "none";
+
+      showError(
+        "Cookies rejected. We respect nothing."
+      );
+
+    });
+
+
+
+  // =============================
+  // FAKE ERROR POPUP
+  // =============================
+
+  function showError(
+    message = "Error 418: Skill issue."
+  ) {
+
+    const popup =
+      document.getElementById(
+        "errorPopup"
+      );
+
+    popup.textContent = message;
+
+    popup.classList.add("show");
+
+    setTimeout(() => {
+
+      popup.classList.remove("show");
+
+    }, 2500);
+
+  }
+
+</script>
+
+</body>
+</html>
