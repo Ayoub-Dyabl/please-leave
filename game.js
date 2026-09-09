@@ -963,6 +963,174 @@ function drawExitArrow() {
 
 }
 
+function updateManager() {
+
+    if (!gameStarted || paused) {
+        return;
+    }
+
+    const distance = distanceBetween(manager, player);
+
+
+    // =========================
+    // DETECTION
+    // =========================
+
+    if (distance < manager.detectionRange) {
+
+        manager.state = "chase";
+
+    } else if (distance > 260) {
+
+        manager.state = "patrol";
+
+    }
+
+
+    // =========================
+    // CHOOSE TARGET
+    // =========================
+
+    let targetX;
+    let targetY;
+    let moveSpeed;
+
+
+    if (manager.state === "chase") {
+
+        targetX = player.x;
+        targetY = player.y;
+
+        moveSpeed = manager.chaseSpeed;
+
+    } else {
+
+        targetX = manager.patrolTargetX;
+        targetY = manager.patrolTargetY;
+
+        moveSpeed = manager.speed;
+
+
+        const patrolDistance = Math.hypot(
+            targetX - manager.x,
+            targetY - manager.y
+        );
+
+
+        if (patrolDistance < 20) {
+
+            manager.patrolTargetX =
+                550 + Math.random() * 320;
+
+            manager.patrolTargetY =
+                100 + Math.random() * 330;
+
+            return;
+        }
+    }
+
+
+    // =========================
+    // MOVEMENT
+    // =========================
+
+    const dx = targetX - manager.x;
+    const dy = targetY - manager.y;
+
+    const moveDistance = Math.hypot(dx, dy);
+
+
+    if (moveDistance > 0) {
+
+        const moveX =
+            (dx / moveDistance) * moveSpeed;
+
+        const moveY =
+            (dy / moveDistance) * moveSpeed;
+
+
+        // horizontal collision
+
+        const testX = {
+
+            x: manager.x + moveX,
+            y: manager.y,
+
+            width: manager.width,
+            height: manager.height
+        };
+
+
+        if (!collidesWithOffice(testX)) {
+
+            manager.x += moveX;
+        }
+
+
+        // vertical collision
+
+        const testY = {
+
+            x: manager.x,
+            y: manager.y + moveY,
+
+            width: manager.width,
+            height: manager.height
+        };
+
+
+        if (!collidesWithOffice(testY)) {
+
+            manager.y += moveY;
+        }
+    }
+
+
+    // =========================
+    // MANAGER ATTACK
+    // =========================
+
+    if (
+        rectanglesTouch(manager, player) &&
+        !managerDamageCooldown
+    ) {
+
+        managerDamageCooldown = true;
+
+        playerHealth -= 15;
+
+
+        if (playerHealth < 0) {
+            playerHealth = 0;
+        }
+
+
+        document.getElementById(
+            "healthText"
+        ).textContent = playerHealth;
+
+
+        objectiveText.textContent =
+            "RUN FROM YOUR MANAGER!";
+
+
+        setTimeout(() => {
+
+            objectiveText.textContent =
+                "Find the exit";
+
+        }, 1200);
+
+
+        setTimeout(() => {
+
+            managerDamageCooldown = false;
+
+        }, 1000);
+    }
+}
+
+
 function drawManager() {
 
     // shadow
