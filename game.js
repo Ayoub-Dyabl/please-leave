@@ -86,14 +86,21 @@ function distanceBetween(a, b) {
 // ========================================
 
 const exitDoor = {
-
     x: 870,
     y: 60,
-
     width: 45,
     height: 70
 };
 
+let hasKeycard = false;
+
+const accessCard = {
+    x: 850,
+    y: 455,
+    width: 28,
+    height: 20,
+    collected: false
+};
 
 // ========================================
 // OFFICE WALLS
@@ -1206,6 +1213,51 @@ function drawManager() {
     }
 }
 
+function drawAccessCard() {
+
+    if (accessCard.collected) {
+        return;
+    }
+
+    ctx.fillStyle = "#ffd84d";
+
+    ctx.fillRect(
+        accessCard.x,
+        accessCard.y,
+        accessCard.width,
+        accessCard.height
+    );
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+        accessCard.x,
+        accessCard.y,
+        accessCard.width,
+        accessCard.height
+    );
+
+    ctx.fillStyle = "#111";
+    ctx.font = "bold 9px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "ID",
+        accessCard.x + accessCard.width / 2,
+        accessCard.y + 14
+    );
+
+    ctx.fillStyle = "#ffd84d";
+    ctx.font = "bold 11px Arial";
+
+    ctx.fillText(
+        "ACCESS CARD",
+        accessCard.x + accessCard.width / 2,
+        accessCard.y - 9
+    );
+}
+
 
 // ========================================
 // RENDER
@@ -1232,6 +1284,8 @@ function render() {
     drawExit();
 
     drawExitArrow();
+    
+    drawAccessCard();
 
     drawManager();
 
