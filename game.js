@@ -41,6 +41,45 @@ const player = {
     color: "#4da6ff"
 };
 
+const manager = {
+    x: 820,
+    y: 240,
+
+    width: 32,
+    height: 38,
+
+    speed: 1.6,
+    chaseSpeed: 2.5,
+
+    detectionRange: 180,
+
+    color: "#ff4d4d",
+
+    health: 100,
+
+    state: "patrol",
+
+    patrolTargetX: 820,
+    patrolTargetY: 240
+};
+
+let playerHealth = 100;
+let managerDamageCooldown = false;
+
+function distanceBetween(a, b) {
+
+    const ax = a.x + a.width / 2;
+    const ay = a.y + a.height / 2;
+
+    const bx = b.x + b.width / 2;
+    const by = b.y + b.height / 2;
+
+    const dx = bx - ax;
+    const dy = by - ay;
+
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
 
 // ========================================
 // EXIT
@@ -924,6 +963,81 @@ function drawExitArrow() {
 
 }
 
+function drawManager() {
+
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        manager.x + manager.width / 2,
+        manager.y + manager.height,
+        18,
+        7,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // body
+    ctx.fillStyle = "#1b1b1b";
+
+    ctx.fillRect(
+        manager.x + 6,
+        manager.y + 13,
+        20,
+        25
+    );
+
+
+    // head
+    ctx.fillStyle = "#dca878";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        manager.x + 16,
+        manager.y + 9,
+        9,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // tie
+    ctx.fillStyle = "#ff4d4d";
+
+    ctx.fillRect(
+        manager.x + 14,
+        manager.y + 17,
+        4,
+        15
+    );
+
+
+    // alert symbol when chasing
+    if (manager.state === "chase") {
+
+        ctx.fillStyle = "#ff4d4d";
+
+        ctx.font = "bold 18px Arial";
+
+        ctx.textAlign = "center";
+
+        ctx.fillText(
+            "!",
+            manager.x + 16,
+            manager.y - 10
+        );
+    }
+}
+
 
 // ========================================
 // RENDER
@@ -951,6 +1065,8 @@ function render() {
 
     drawExitArrow();
 
+    drawManager();
+
     drawPlayer();
 
 }
@@ -963,6 +1079,8 @@ function render() {
 function gameLoop() {
 
     updatePlayer();
+   
+    updateManager();
 
     render();
 
