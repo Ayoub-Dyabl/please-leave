@@ -1,794 +1,1154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Please Leave</title>
+<title>Monday Survival Simulator</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0b0b0b;
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
-      transition: 0.3s;
-    }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 25px 7%;
-      border-bottom: 1px solid #222;
-    }
+body{
+    background:#0d0f14;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow:hidden;
+}
 
-    .logo {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
+/* =========================
+   TOP HUD
+========================= */
 
-    .logo span {
-      color: #ff3b30;
-    }
+.hud{
+    height:90px;
+    background:#161922;
+    border-bottom:2px solid #292d3a;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 30px;
+}
 
-    #themeBtn {
-      padding: 10px 18px;
-      border-radius: 30px;
-      border: 1px solid #444;
-      background: #111;
-      color: white;
-      cursor: pointer;
-    }
+.logo{
+    font-weight:900;
+    font-size:22px;
+}
 
-    .hero {
-      min-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 40px 20px;
-    }
+.logo span{
+    color:#ff4d4d;
+}
 
-    .hero h1 {
-      font-size: clamp(50px, 9vw, 120px);
-      line-height: 0.9;
-      max-width: 1000px;
-    }
+.stats{
+    display:flex;
+    gap:25px;
+}
 
-    .hero h1 span {
-      color: #ff3b30;
-    }
+.stat{
+    text-align:center;
+}
 
-    .hero p {
-      margin-top: 30px;
-      max-width: 550px;
-      font-size: 18px;
-      color: #999;
-      line-height: 1.7;
-    }
+.stat-title{
+    color:#808695;
+    font-size:12px;
+}
 
-    .button-zone {
-      position: relative;
-      width: 100%;
-      max-width: 700px;
-      height: 170px;
-      margin-top: 30px;
-    }
+.stat-value{
+    font-size:18px;
+    font-weight:bold;
+    margin-top:4px;
+}
 
-    #mainBtn {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      padding: 18px 32px;
-      font-size: 17px;
-      font-weight: bold;
-      background: #ff3b30;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.12s;
-      white-space: nowrap;
-    }
+/* =========================
+   GAME AREA
+========================= */
 
-    .wasted {
-      margin-top: 10px;
-      color: #555;
-      font-size: 14px;
-    }
+#game{
+    position:relative;
+    width:100vw;
+    height:calc(100vh - 90px);
+    overflow:hidden;
+    background:
+        linear-gradient(#181b24 1px, transparent 1px),
+        linear-gradient(90deg,#181b24 1px,transparent 1px);
+    background-size:40px 40px;
+}
 
-    .section {
-      max-width: 900px;
-      margin: auto;
-      padding: 100px 20px;
-    }
+/* office decoration */
 
-    .section h2 {
-      text-align: center;
-      font-size: 42px;
-      margin-bottom: 15px;
-    }
+.desk{
+    position:absolute;
+    width:150px;
+    height:70px;
+    background:#292e3b;
+    border:3px solid #3a4050;
+    border-radius:5px;
+}
 
-    .section-subtitle {
-      text-align: center;
-      color: #777;
-      margin-bottom: 50px;
-    }
+.desk1{left:12%;top:20%;}
+.desk2{left:65%;top:18%;}
+.desk3{left:25%;top:65%;}
+.desk4{left:70%;top:65%;}
 
-    .card {
-      max-width: 500px;
-      margin: auto;
-      padding: 35px;
-      background: #121212;
-      border: 1px solid #252525;
-      border-radius: 20px;
-    }
+/* =========================
+   PLAYER
+========================= */
 
-    .card input {
-      width: 100%;
-      padding: 15px;
-      margin-top: 12px;
-      margin-bottom: 10px;
-      border-radius: 9px;
-      border: 1px solid #333;
-      background: #080808;
-      color: white;
-      outline: none;
-    }
+#player{
+    position:absolute;
+    width:50px;
+    height:50px;
+    background:#4da6ff;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:10;
+}
 
-    .card input:focus {
-      border-color: #ff3b30;
-    }
+/* =========================
+   ENEMIES
+========================= */
 
-    #loginBtn {
-      width: 100%;
-      margin-top: 15px;
-      padding: 15px;
-      border: none;
-      border-radius: 9px;
-      background: white;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.enemy{
+    position:absolute;
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    z-index:5;
+}
 
-    #loginMessage {
-      min-height: 25px;
-      margin-top: 18px;
-      color: #ff3b30;
-      text-align: center;
-      font-weight: bold;
-    }
+.email{
+    background:#ff5252;
+}
 
-    .loading-card {
-      max-width: 600px;
-      margin: auto;
-      padding: 35px;
-      background: #121212;
-      border-radius: 20px;
-      border: 1px solid #252525;
-    }
+.call{
+    background:#8e5cff;
+}
 
-    .loading-track {
-      height: 16px;
-      border-radius: 20px;
-      background: #222;
-      overflow: hidden;
-    }
+.meeting{
+    background:#ff9f43;
+}
 
-    #loadingBar {
-      width: 0%;
-      height: 100%;
-      background: #ff3b30;
-      transition: width 0.1s;
-    }
+.manager{
+    background:#111;
+    border:2px solid #ff4d4d;
+}
 
-    #loadingText {
-      margin-top: 20px;
-      text-align: center;
-      color: #777;
-    }
+/* =========================
+   MESSAGE
+========================= */
 
-    .terms-box {
-      position: relative;
-      height: 250px;
-      max-width: 650px;
-      margin: auto;
-      border: 1px solid #222;
-      border-radius: 20px;
-      background: #111;
-    }
+#message{
+    position:absolute;
+    top:25px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#11151d;
+    border:1px solid #323747;
+    padding:15px 25px;
+    border-radius:10px;
+    font-weight:bold;
+    opacity:0;
+    transition:.3s;
+    z-index:100;
+}
 
-    #termsLabel {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+#message.show{
+    opacity:1;
+}
 
-    footer {
-      padding: 50px;
-      text-align: center;
-      color: #555;
-    }
+/* =========================
+   CONTROLS
+========================= */
 
-    /* terrible light mode on purpose */
+.controls{
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    background:rgba(0,0,0,.6);
+    padding:15px;
+    border-radius:10px;
+    font-size:13px;
+    color:#a7adba;
+    line-height:1.8;
+}
 
-    body.bad-light {
-      background: #ffff00;
-      color: #ff00ff;
-      font-family: "Comic Sans MS", cursive;
-    }
+/* =========================
+   START SCREEN
+========================= */
 
-    body.bad-light .card,
-    body.bad-light .loading-card,
-    body.bad-light .terms-box {
-      background: #00ffff;
-      border: 5px dashed red;
-    }
+#startScreen,
+#gameOverScreen,
+#winScreen{
+    position:fixed;
+    inset:0;
+    background:rgba(5,6,9,.96);
+    z-index:500;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
 
-    body.bad-light input {
-      background: lime;
-      color: blue;
-    }
+.menu-box{
+    max-width:600px;
+    padding:40px;
+}
 
-    body.bad-light .hero p,
-    body.bad-light .section-subtitle {
-      color: blue;
-    }
+.menu-box h1{
+    font-size:55px;
+    margin-bottom:15px;
+}
 
-    /* cookie popup */
+.menu-box h1 span{
+    color:#ff4d4d;
+}
 
-    #cookiePopup {
-      position: fixed;
-      left: 20px;
-      bottom: 20px;
-      width: min(420px, calc(100% - 40px));
-      padding: 25px;
-      background: white;
-      color: black;
-      border-radius: 15px;
-      z-index: 50;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
+.menu-box p{
+    color:#999;
+    line-height:1.7;
+    margin-bottom:30px;
+}
 
-    #cookiePopup p {
-      margin: 12px 0 20px;
-      color: #555;
-    }
+.big-button{
+    padding:17px 30px;
+    border:none;
+    border-radius:10px;
+    background:#ff4d4d;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
-    .cookie-buttons {
-      position: relative;
-      height: 70px;
-    }
+.big-button:hover{
+    transform:scale(1.05);
+}
 
-    #rejectCookies {
-      padding: 16px 30px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+#gameOverScreen,
+#winScreen{
+    display:none;
+}
 
-    #acceptCookies {
-      position: absolute;
-      right: 0;
-      top: 5px;
-      padding: 10px 16px;
-      background: #ddd;
-      color: black;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+/* =========================
+   COFFEE
+========================= */
 
-    #errorPopup {
-      position: fixed;
-      right: 20px;
-      top: 100px;
-      padding: 18px 22px;
-      background: #ff3b30;
-      border-radius: 10px;
-      font-weight: bold;
-      transform: translateX(150%);
-      transition: 0.3s;
-      z-index: 100;
-    }
+#coffeePower{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    background:#21180f;
+    border:1px solid #5e4425;
+    padding:15px 20px;
+    border-radius:10px;
+    color:#ffcc80;
+}
 
-    #errorPopup.show {
-      transform: translateX(0);
-    }
-
-    @media (max-width: 600px) {
-      .hero h1 {
-        font-size: 58px;
-      }
-
-      .section h2 {
-        font-size: 32px;
-      }
-    }
-  </style>
+</style>
 </head>
+
 
 <body>
 
-  <nav>
+<!-- =========================
+     HUD
+========================= -->
+
+<div class="hud">
+
     <div class="logo">
-      PLEASE<span>LEAVE.</span>
+        MONDAY <span>SURVIVAL</span>
     </div>
 
-    <button id="themeBtn">
-      Light Mode ☀️
-    </button>
-  </nav>
+    <div class="stats">
 
+        <div class="stat">
+            <div class="stat-title">TIME</div>
+            <div class="stat-value" id="time">9:00 AM</div>
+        </div>
 
-  <section class="hero">
+        <div class="stat">
+            <div class="stat-title">ENERGY</div>
+            <div class="stat-value" id="energy">100%</div>
+        </div>
 
-    <h1>
-      Welcome.<br>
-      <span>Unfortunately.</span>
-    </h1>
+        <div class="stat">
+            <div class="stat-title">PATIENCE</div>
+            <div class="stat-value" id="patience">100%</div>
+        </div>
 
-    <p>
-      You somehow found this website.
-      We're disappointed in both of us.
-    </p>
+        <div class="stat">
+            <div class="stat-title">COFFEE</div>
+            <div class="stat-value" id="coffee">3</div>
+        </div>
 
-    <div class="button-zone" id="buttonZone">
-      <button id="mainBtn">
-        Enter Website
-      </button>
-    </div>
-
-    <div class="wasted">
-      Time wasted here:
-      <span id="timer">0</span> seconds
-    </div>
-
-  </section>
-
-
-  <section class="section">
-
-    <h2>Login</h2>
-
-    <p class="section-subtitle">
-      We already know you're going to get this wrong.
-    </p>
-
-    <div class="card">
-
-      <input
-        type="text"
-        id="username"
-        placeholder="Username"
-      >
-
-      <input
-        type="password"
-        id="password"
-        placeholder="Password"
-      >
-
-      <button id="loginBtn">
-        Login
-      </button>
-
-      <div id="loginMessage"></div>
+        <div class="stat">
+            <div class="stat-title">SCORE</div>
+            <div class="stat-value" id="score">0</div>
+        </div>
 
     </div>
 
-  </section>
+</div>
 
 
-  <section class="section">
+<!-- =========================
+     GAME
+========================= -->
 
-    <h2>Please Wait</h2>
+<div id="game">
 
-    <p class="section-subtitle">
-      This definitely won't waste your time.
-    </p>
+    <div class="desk desk1"></div>
+    <div class="desk desk2"></div>
+    <div class="desk desk3"></div>
+    <div class="desk desk4"></div>
 
-    <div class="loading-card">
+    <div id="player">🧑‍💼</div>
 
-      <div class="loading-track">
-        <div id="loadingBar"></div>
-      </div>
+    <div id="message"></div>
 
-      <div id="loadingText">
-        Loading absolutely nothing...
-      </div>
+    <div class="controls">
 
-    </div>
+        <b>CONTROLS</b><br>
 
-  </section>
-
-
-  <section class="section">
-
-    <h2>Terms & Conditions</h2>
-
-    <p class="section-subtitle">
-      Just accept them. Or try.
-    </p>
-
-    <div class="terms-box" id="termsBox">
-
-      <label id="termsLabel">
-
-        <input type="checkbox">
-
-        I agree to the terms
-
-      </label>
+        Arrow Keys / WASD — Move<br>
+        SPACE — Drink Coffee<br>
+        H — Hide for 3 seconds
 
     </div>
 
-  </section>
+    <div id="coffeePower">
+        ☕ Coffee restores energy
+    </div>
+
+</div>
 
 
-  <footer>
-    © 2026 PleaseLeave. Unfortunately all rights reserved.
-  </footer>
+<!-- =========================
+     START SCREEN
+========================= -->
 
+<div id="startScreen">
 
-  <div id="cookiePopup">
+    <div class="menu-box">
 
-    <strong>
-      🍪 We use cookies.
-    </strong>
+        <h1>
+            MONDAY<br>
+            <span>SURVIVAL</span>
+        </h1>
 
-    <p>
-      Not because we need them. We just wanted another popup.
-    </p>
+        <p>
+            It's 9:00 AM.<br><br>
 
-    <div class="cookie-buttons">
+            Your inbox has 37 unread emails.<br>
+            Your manager is already looking for you.<br>
+            Someone scheduled a meeting that could have been an email.<br><br>
 
-      <button id="rejectCookies">
-        Reject Everything
-      </button>
+            Survive until 5:00 PM.
+        </p>
 
-      <button id="acceptCookies">
-        Accept
-      </button>
+        <button class="big-button" onclick="startGame()">
+            ENTER THE OFFICE
+        </button>
 
     </div>
 
-  </div>
+</div>
 
 
-  <div id="errorPopup">
-    Error 418: Skill issue.
-  </div>
+<!-- =========================
+     GAME OVER
+========================= -->
+
+<div id="gameOverScreen">
+
+    <div class="menu-box">
+
+        <h1>
+            💀 BURNOUT
+        </h1>
+
+        <p id="gameOverText">
+            Monday defeated you.
+        </p>
+
+        <button class="big-button" onclick="location.reload()">
+            TRY MONDAY AGAIN
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     WIN
+========================= -->
+
+<div id="winScreen">
+
+    <div class="menu-box">
+
+        <h1>
+            🎉 5:00 PM
+        </h1>
+
+        <p id="winText">
+            Somehow, you survived Monday.
+        </p>
+
+        <button class="big-button" onclick="location.reload()">
+            SURVIVE ANOTHER MONDAY
+        </button>
+
+    </div>
+
+</div>
 
 
 <script>
 
-  // =============================
-  // TIME WASTED COUNTER
-  // =============================
+/* =========================
+   VARIABLES
+========================= */
 
-  let seconds = 0;
+const game = document.getElementById("game");
+const player = document.getElementById("player");
 
-  setInterval(() => {
+let playerX = window.innerWidth / 2;
+let playerY = (window.innerHeight - 90) / 2;
 
-    seconds++;
+let energy = 100;
+let patience = 100;
+let coffee = 3;
+let score = 0;
 
-    document.getElementById("timer").textContent = seconds;
+let gameRunning = false;
+let hiding = false;
 
-  }, 1000);
+let officeMinutes = 9 * 60;
+
+let keys = {};
+
+let enemies = [];
 
 
+/* =========================
+   START GAME
+========================= */
 
-  // =============================
-  // BUTTON THAT RUNS AWAY
-  // =============================
+function startGame(){
 
-  const mainBtn = document.getElementById("mainBtn");
-  const buttonZone = document.getElementById("buttonZone");
+    document.getElementById("startScreen").style.display="none";
 
-  mainBtn.addEventListener("mouseenter", () => {
+    gameRunning = true;
 
-    const maxX =
-      buttonZone.clientWidth -
-      mainBtn.offsetWidth;
+    showMessage("Welcome to Monday. Good luck. You'll need it.");
 
-    const maxY =
-      buttonZone.clientHeight -
-      mainBtn.offsetHeight;
+}
 
-    const randomX =
-      Math.random() * maxX;
 
-    const randomY =
-      Math.random() * maxY;
+/* =========================
+   MOVEMENT
+========================= */
 
-    mainBtn.style.left =
-      randomX + "px";
+document.addEventListener("keydown",(e)=>{
 
-    mainBtn.style.top =
-      randomY + "px";
+    keys[e.key.toLowerCase()] = true;
 
-    mainBtn.style.transform =
-      "none";
+    if(e.code === "Space"){
 
-    const messages = [
-      "Nice try.",
-      "Too slow.",
-      "Almost.",
-      "Nope.",
-      "Catch me.",
-      "Skill issue."
+        e.preventDefault();
+
+        drinkCoffee();
+
+    }
+
+    if(e.key.toLowerCase() === "h"){
+
+        hideFromWork();
+
+    }
+
+});
+
+
+document.addEventListener("keyup",(e)=>{
+
+    keys[e.key.toLowerCase()] = false;
+
+});
+
+
+function movePlayer(){
+
+    if(!gameRunning) return;
+
+    let speed = 5;
+
+    if(
+        keys["arrowup"] ||
+        keys["w"]
+    ){
+        playerY -= speed;
+    }
+
+    if(
+        keys["arrowdown"] ||
+        keys["s"]
+    ){
+        playerY += speed;
+    }
+
+    if(
+        keys["arrowleft"] ||
+        keys["a"]
+    ){
+        playerX -= speed;
+    }
+
+    if(
+        keys["arrowright"] ||
+        keys["d"]
+    ){
+        playerX += speed;
+    }
+
+    playerX = Math.max(
+        0,
+        Math.min(
+            game.clientWidth - 50,
+            playerX
+        )
+    );
+
+    playerY = Math.max(
+        0,
+        Math.min(
+            game.clientHeight - 50,
+            playerY
+        )
+    );
+
+    player.style.left = playerX + "px";
+    player.style.top = playerY + "px";
+    player.style.transform = "none";
+
+}
+
+
+/* =========================
+   CREATE ENEMY
+========================= */
+
+function createEnemy(){
+
+    if(!gameRunning) return;
+
+    const types = [
+        {
+            class:"email",
+            icon:"📧",
+            damage:8,
+            text:"URGENT email received."
+        },
+
+        {
+            class:"call",
+            icon:"📞",
+            damage:12,
+            text:"Someone is calling you. Why?"
+        },
+
+        {
+            class:"meeting",
+            icon:"📅",
+            damage:15,
+            text:"Meeting detected. It could have been an email."
+        },
+
+        {
+            class:"manager",
+            icon:"👔",
+            damage:20,
+            text:"YOUR MANAGER FOUND YOU."
+        }
     ];
 
-    mainBtn.textContent =
-      messages[
-        Math.floor(
-          Math.random() * messages.length
-        )
-      ];
+    const type =
+        types[
+            Math.floor(
+                Math.random() *
+                types.length
+            )
+        ];
 
-  });
+    const enemy =
+        document.createElement("div");
 
-
-
-  // =============================
-  // FAKE LOGIN
-  // =============================
-
-  const loginBtn =
-    document.getElementById("loginBtn");
-
-  const loginMessage =
-    document.getElementById("loginMessage");
-
-  const loginMessages = [
-
-    "Incorrect password. Obviously.",
-
-    "We expected better.",
-
-    "Password rejected for emotional reasons.",
-
-    "That password was embarrassing.",
-
-    "Account found. Access denied anyway.",
-
-    "Nice password. Still no.",
-
-    "Your credentials have been judged."
-
-  ];
-
-  loginBtn.addEventListener("click", () => {
-
-    const randomMessage =
-      loginMessages[
-        Math.floor(
-          Math.random() *
-          loginMessages.length
-        )
-      ];
-
-    loginMessage.textContent =
-      randomMessage;
-
-    loginBtn.textContent =
-      "Nope";
-
-    showError();
-
-  });
-
-
-
-  // =============================
-  // LOADING BAR
-  // =============================
-
-  let progress = 0;
-
-  const loadingBar =
-    document.getElementById("loadingBar");
-
-  const loadingText =
-    document.getElementById("loadingText");
-
-  setInterval(() => {
-
-    progress++;
-
-    loadingBar.style.width =
-      progress + "%";
-
-    loadingText.textContent =
-      "Loading... " +
-      progress +
-      "%";
-
-    if (progress >= 99) {
-
-      loadingText.textContent =
-        "Almost there 😈";
-
-      setTimeout(() => {
-
-        progress = 0;
-
-        loadingBar.style.width =
-          "0%";
-
-        loadingText.textContent =
-          "Something went wrong. Starting again.";
-
-      }, 500);
-
-    }
-
-  }, 100);
-
-
-
-  // =============================
-  // RUNAWAY TERMS CHECKBOX
-  // =============================
-
-  const termsLabel =
-    document.getElementById("termsLabel");
-
-  const termsBox =
-    document.getElementById("termsBox");
-
-  termsLabel.addEventListener(
-    "mouseenter",
-    () => {
-
-      const maxX =
-        termsBox.clientWidth -
-        termsLabel.offsetWidth;
-
-      const maxY =
-        termsBox.clientHeight -
-        termsLabel.offsetHeight;
-
-      termsLabel.style.left =
-        Math.random() *
-        maxX +
-        "px";
-
-      termsLabel.style.top =
-        Math.random() *
-        maxY +
-        "px";
-
-      termsLabel.style.transform =
-        "none";
-
-    }
-  );
-
-
-
-  // =============================
-  // TERRIBLE LIGHT MODE
-  // =============================
-
-  const themeBtn =
-    document.getElementById("themeBtn");
-
-  themeBtn.addEventListener("click", () => {
-
-    document.body.classList.toggle(
-      "bad-light"
+    enemy.classList.add(
+        "enemy",
+        type.class
     );
 
-    if (
-      document.body.classList.contains(
-        "bad-light"
-      )
-    ) {
+    enemy.textContent =
+        type.icon;
 
-      themeBtn.textContent =
-        "WHY DID YOU DO THAT?";
+    enemy.dataset.damage =
+        type.damage;
 
-    } else {
+    enemy.dataset.message =
+        type.text;
 
-      themeBtn.textContent =
-        "Light Mode ☀️";
+
+    const side =
+        Math.floor(
+            Math.random() * 4
+        );
+
+    let x;
+    let y;
+
+    if(side === 0){
+
+        x = 0;
+        y = Math.random() * game.clientHeight;
+
+    }
+
+    if(side === 1){
+
+        x = game.clientWidth - 50;
+        y = Math.random() * game.clientHeight;
 
     }
 
-  });
+    if(side === 2){
 
-
-
-  // =============================
-  // COOKIE BUTTON RUNS AWAY
-  // =============================
-
-  const acceptCookies =
-    document.getElementById(
-      "acceptCookies"
-    );
-
-  acceptCookies.addEventListener(
-    "mouseenter",
-    () => {
-
-      acceptCookies.style.right =
-        Math.random() *
-        250 +
-        "px";
-
-      acceptCookies.style.top =
-        Math.random() *
-        40 +
-        "px";
+        x = Math.random() * game.clientWidth;
+        y = 0;
 
     }
-  );
+
+    if(side === 3){
+
+        x = Math.random() * game.clientWidth;
+        y = game.clientHeight - 50;
+
+    }
 
 
-  document
-    .getElementById("rejectCookies")
-    .addEventListener("click", () => {
+    enemy.style.left =
+        x + "px";
 
-      document.getElementById(
-        "cookiePopup"
-      ).style.display = "none";
+    enemy.style.top =
+        y + "px";
 
-      showError(
-        "Cookies rejected. We respect nothing."
-      );
+    enemy.dataset.x = x;
+    enemy.dataset.y = y;
+
+    game.appendChild(enemy);
+
+    enemies.push(enemy);
+
+}
+
+
+/* =========================
+   MOVE ENEMIES
+========================= */
+
+function moveEnemies(){
+
+    enemies.forEach((enemy,index)=>{
+
+        if(hiding) return;
+
+        let ex =
+            parseFloat(enemy.dataset.x);
+
+        let ey =
+            parseFloat(enemy.dataset.y);
+
+        const dx =
+            playerX - ex;
+
+        const dy =
+            playerY - ey;
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+        let speed = 1.8;
+
+        if(
+            enemy.classList.contains(
+                "manager"
+            )
+        ){
+
+            speed = 2.4;
+
+        }
+
+
+        if(distance > 0){
+
+            ex +=
+                dx / distance *
+                speed;
+
+            ey +=
+                dy / distance *
+                speed;
+
+        }
+
+
+        enemy.dataset.x = ex;
+        enemy.dataset.y = ey;
+
+        enemy.style.left =
+            ex + "px";
+
+        enemy.style.top =
+            ey + "px";
+
+
+        if(distance < 45){
+
+            hitPlayer(
+                enemy
+            );
+
+            enemy.remove();
+
+            enemies.splice(
+                index,
+                1
+            );
+
+        }
 
     });
 
+}
 
 
-  // =============================
-  // FAKE ERROR POPUP
-  // =============================
+/* =========================
+   HIT PLAYER
+========================= */
 
-  function showError(
-    message = "Error 418: Skill issue."
-  ) {
+function hitPlayer(enemy){
 
-    const popup =
-      document.getElementById(
-        "errorPopup"
-      );
+    const damage =
+        Number(
+            enemy.dataset.damage
+        );
 
-    popup.textContent = message;
+    patience -= damage;
 
-    popup.classList.add("show");
+    energy -=
+        damage / 2;
 
-    setTimeout(() => {
+    showMessage(
+        enemy.dataset.message
+    );
 
-      popup.classList.remove("show");
+    score = Math.max(
+        0,
+        score - 10
+    );
 
-    }, 2500);
+    updateHUD();
 
-  }
+}
+
+
+/* =========================
+   COFFEE
+========================= */
+
+function drinkCoffee(){
+
+    if(!gameRunning) return;
+
+    if(coffee <= 0){
+
+        showMessage(
+            "No coffee left. This is now a survival horror game."
+        );
+
+        return;
+
+    }
+
+    coffee--;
+
+    energy += 25;
+
+    if(energy > 100){
+
+        energy = 100;
+
+    }
+
+    showMessage(
+        "☕ Coffee consumed. Corporate productivity temporarily restored."
+    );
+
+    updateHUD();
+
+}
+
+
+/* =========================
+   HIDE
+========================= */
+
+function hideFromWork(){
+
+    if(!gameRunning) return;
+
+    if(hiding) return;
+
+    hiding = true;
+
+    player.style.opacity=".25";
+
+    showMessage(
+        "🚽 Hiding from responsibilities..."
+    );
+
+    setTimeout(()=>{
+
+        hiding = false;
+
+        player.style.opacity="1";
+
+        showMessage(
+            "You have returned to society."
+        );
+
+    },3000);
+
+}
+
+
+/* =========================
+   CLOCK
+========================= */
+
+function updateOfficeClock(){
+
+    if(!gameRunning) return;
+
+    officeMinutes += 3;
+
+    energy -= .7;
+
+    score += 2;
+
+
+    let hours =
+        Math.floor(
+            officeMinutes / 60
+        );
+
+    let minutes =
+        officeMinutes % 60;
+
+
+    if(hours >= 17){
+
+        winGame();
+
+        return;
+
+    }
+
+
+    let displayHour =
+        hours > 12
+        ? hours - 12
+        : hours;
+
+    let ampm =
+        hours >= 12
+        ? "PM"
+        : "AM";
+
+    document.getElementById(
+        "time"
+    ).textContent =
+        displayHour +
+        ":" +
+        String(minutes).padStart(2,"0") +
+        " " +
+        ampm;
+
+
+    updateHUD();
+
+}
+
+
+/* =========================
+   UPDATE HUD
+========================= */
+
+function updateHUD(){
+
+    energy =
+        Math.max(
+            0,
+            energy
+        );
+
+    patience =
+        Math.max(
+            0,
+            patience
+        );
+
+
+    document.getElementById(
+        "energy"
+    ).textContent =
+        Math.round(energy) +
+        "%";
+
+
+    document.getElementById(
+        "patience"
+    ).textContent =
+        Math.round(patience) +
+        "%";
+
+
+    document.getElementById(
+        "coffee"
+    ).textContent =
+        coffee;
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        score;
+
+
+    if(
+        energy <= 0 ||
+        patience <= 0
+    ){
+
+        gameOver();
+
+    }
+
+}
+
+
+/* =========================
+   MESSAGES
+========================= */
+
+let messageTimeout;
+
+function showMessage(text){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent =
+        text;
+
+    message.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        messageTimeout
+    );
+
+
+    messageTimeout =
+        setTimeout(()=>{
+
+            message.classList.remove(
+                "show"
+            );
+
+        },2200);
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver(){
+
+    gameRunning = false;
+
+    document.getElementById(
+        "gameOverScreen"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "gameOverText"
+    ).innerHTML =
+
+        "Monday defeated you.<br><br>" +
+
+        "Final Score: <b>" +
+        score +
+        "</b><br>" +
+
+        "You should probably update your résumé.";
+
+}
+
+
+/* =========================
+   WIN GAME
+========================= */
+
+function winGame(){
+
+    gameRunning = false;
+
+    document.getElementById(
+        "winScreen"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "winText"
+    ).innerHTML =
+
+        "You survived until 5:00 PM.<br><br>" +
+
+        "Final Score: <b>" +
+        score +
+        "</b><br><br>" +
+
+        "Congratulations.<br>" +
+
+        "See you tomorrow.";
+
+}
+
+
+/* =========================
+   GAME LOOP
+========================= */
+
+function gameLoop(){
+
+    movePlayer();
+
+    moveEnemies();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+gameLoop();
+
+
+/* spawn problems */
+
+setInterval(()=>{
+
+    if(gameRunning){
+
+        createEnemy();
+
+    }
+
+},1700);
+
+
+/* office clock */
+
+setInterval(()=>{
+
+    updateOfficeClock();
+
+},900);
+
+
+/* random office messages */
+
+const officeEvents = [
+
+    "Someone replied ALL.",
+
+    "Your Teams status changed to Away.",
+
+    "Your manager said: 'Quick question.'",
+
+    "The printer requires emotional support.",
+
+    "Lunch meeting added to your calendar.",
+
+    "New email subject: URGENT URGENT URGENT.",
+
+    "Someone scheduled a 4:30 PM meeting.",
+
+    "Your coworker said: 'Got a minute?'",
+
+    "The Wi-Fi works. Unfortunately.",
+
+    "HR sent a mandatory happiness survey."
+
+];
+
+
+setInterval(()=>{
+
+    if(!gameRunning) return;
+
+    const event =
+        officeEvents[
+            Math.floor(
+                Math.random() *
+                officeEvents.length
+            )
+        ];
+
+    showMessage(event);
+
+},7000);
 
 </script>
 
